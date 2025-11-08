@@ -6,8 +6,8 @@ import { generateCSV } from '../utils/csvExporter.js';
 
 const router = express.Router();
 
-// GET /api/assessments/:id/synthesis - Get AI-generated synthesis
-router.get('/assessments/:id/synthesis', async (req, res, next) => {
+// GET /:id/synthesis - Get AI-generated synthesis
+router.get('/:id/synthesis', async (req, res, next) => {
   try {
     const assessmentId = req.params.id;
 
@@ -84,8 +84,8 @@ router.get('/assessments/:id/synthesis', async (req, res, next) => {
   }
 });
 
-// GET /api/assessments/:id/report/pdf - Download report as PDF
-router.get('/assessments/:id/report/pdf', (req, res, next) => {
+// GET /:id/report/pdf - Download report as PDF
+router.get('/:id/report/pdf', (req, res, next) => {
   try {
     const assessmentId = req.params.id;
 
@@ -114,8 +114,8 @@ router.get('/assessments/:id/report/pdf', (req, res, next) => {
   }
 });
 
-// GET /api/assessments/:id/report/csv - Export responses as CSV
-router.get('/assessments/:id/report/csv', (req, res, next) => {
+// GET /:id/report/csv - Export responses as CSV
+router.get('/:id/report/csv', (req, res, next) => {
   try {
     const assessmentId = req.params.id;
 

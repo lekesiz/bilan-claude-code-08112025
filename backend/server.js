@@ -30,9 +30,9 @@ app.use((err, req, res, next) => {
 
 // Routes
 app.use('/api/assessments', assessmentsRouter);
+app.use('/api/assessments', reportsRouter); // Report endpoints nested under assessments
 app.use('/api/questions', questionsRouter);
 app.use('/api/responses', responsesRouter);
-app.use('/api/reports', reportsRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
