@@ -174,25 +174,22 @@ router.get('/:id', (req, res, next) => {
         return res.status(404).json({ error: 'Assessment not found' });
       }
 
-      // Get current progress
-      db.all(
-        'SELECT * FROM responses WHERE assessment_id = ? ORDER BY answered_at',
+      // Get current progress - count responses
+      db.get(
+        'SELECT COUNT(*) as count FROM responses WHERE assessment_id = ?',
         [assessmentId],
-        (err, responses) => {
+        (err, result) => {
           if (err) {
             return next(err);
           }
 
-          const answeredQuestions = new Set(responses.map(r => r.question_id));
-          const currentPhase = responses.length > 0 ?
-            Math.max(...responses.map(r => {
-              const q = questionsCache[r.question_id];
-              return q ? q.phase_number : 1;
-            })) : 1;
+          const answeredQuestions = result.count;
+          const currentPhase = Math.ceil((answeredQuestions / assessment.total_questions) * assessment.total_phases) || 1;
 
+          // Get current phase questions
           db.all(
             'SELECT * FROM questions WHERE assessment_id = ? AND phase_number = ? ORDER BY question_number',
-            [assessmentId, currentPhase],
+            [assessmentId, Math.min(currentPhase, assessment.total_phases)],
             (err, currentPhaseQuestions) => {
               if (err) {
                 return next(err);
@@ -201,11 +198,11 @@ router.get('/:id', (req, res, next) => {
               res.json({
                 ...assessment,
                 progress: {
-                  answered_questions: answeredQuestions.size,
+                  answered_questions: answeredQuestions,
                   current_phase: currentPhase,
                   total_questions: assessment.total_questions
                 },
-                current_phase_questions: currentPhaseQuestions
+                current_phase_questions: currentPhaseQuestions || []
               });
             }
           );
